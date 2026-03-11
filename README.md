@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+3
+HelloWorld.java
+package helloWorld;
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-## Available Scripts
+@Path("helloworld")
 
-In the project directory, you can run:
+public class HelloWorld {
 
-### `npm start`
+    @GET
+    @Produces("text/html")
+    public String getHtml() {
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+        return "<html><body><h1>Hello World!</h1></body></html>";
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    }
 
-### `npm test`
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    public Response updateMessage(@PathParam("id") String id, String message) {
 
-### `npm run build`
+        String result = "Updated message ID: " + id + " with " + message;
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+        return Response.ok(result).build();
+    }
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    @GET
+    @Path("Upper")
+    @Produces(MediaType.TEXT_PLAIN)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    public String toUpperCase(@QueryParam("text") String Text){
 
-### `npm run eject`
+        return Text.toUpperCase();
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    }
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    @GET
+    @Path("Lower")
+    @Produces(MediaType.TEXT_PLAIN)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    public String toLowerCase(@QueryParam("text") String Text){
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+        return Text.toLowerCase();
 
-## Learn More
+    }
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+prac4
+restclient.java
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
-### Code Splitting
+public class restclient {
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    public static void main(String args[])
+    {
 
-### Analyzing the Bundle Size
+        Client c = ClientBuilder.newClient();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+        WebTarget t =
+        c.target("http://localhost:8080/RestDemo/webresources/helloworld/");
 
-### Making a Progressive Web App
+        String res = t.request(MediaType.TEXT_HTML).get(String.class);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+        System.out.println("Response " + res);
 
-### Advanced Configuration
+        c.close();
+    }
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+NewClass.java
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
-### Deployment
+public class NewClass{
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+    public static void main(String args[])
+    {
 
-### `npm run build` fails to minify
+        Client c = ClientBuilder.newClient();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+        WebTarget t =
+        c.target("http://localhost:8080/RestDemo/webresources/helloworld/Lower")
+        .queryParam("text", "HELLO STUDENTS");
+
+        WebTarget m =
+        c.target("http://localhost:8080/RestDemo/webresources/helloworld/Upper")
+        .queryParam("text", "hello students");
+
+        String res = t.request(MediaType.TEXT_PLAIN).get(String.class);
+        String result = m.request(MediaType.TEXT_PLAIN).get(String.class);
+
+        System.out.println("Response " + res);
+        System.out.println("Response " + result);
+
+        c.close();
+    }
+}
