@@ -423,3 +423,121 @@ Example output
 http://172.25.145.140:32696
 Open this URL in browser.
 Application will run.
+
+Practical 5 — Detailed Steps
+Step 1 — Create Folder
+From page 1 screenshot, first create a folder in C drive.
+Open Command Prompt / PowerShell
+cd C:\
+mkdir DockerDemo
+cd DockerDemo
+Now location should be:
+C:\DockerDemo
+Step 2 — Create Python File
+(Page 1 image shows hello.py)
+Inside DockerDemo folder create file:
+hello.py
+Write this code:
+print("hello")
+Save the file.
+Step 3 — Create Dockerfile
+(Page 1 second screenshot)
+Create another file in same folder:
+Dockerfile
+Paste this:
+FROM python:3.12-slim
+WORKDIR /app
+COPY hello.py .
+CMD ["python","hello.py"]
+What these lines mean
+Command	Meaning
+FROM	base image
+WORKDIR	working folder inside container
+COPY	copy python file
+CMD	run python file
+These are the 3 Docker layers mentioned in the image.
+Step 4 — Check Files
+(Page 1 bottom terminal screenshot)
+Run:
+dir
+You should see:
+Dockerfile
+hello.py
+Exactly like screenshot.
+Step 5 — Build Docker Image
+(Page 2 first screenshot)
+Run:
+docker build -t py-hello .
+Explanation
+Part	Meaning
+docker build	build image
+-t py-hello	image name
+.	current folder
+Output will show layers building like in the screenshot.
+Step 6 — Run Python Container
+(Page 2 second screenshot)
+Run:
+docker run py-hello
+Output will be:
+hello
+This means the Python Docker container works.
+Step 7 — Pull MySQL Image
+(Page 2 third screenshot)
+Run:
+docker pull mysql:8.0
+Docker downloads MySQL image.
+You will see many Pull complete lines.
+Step 8 — Run MySQL Container
+(Page 2 bottom screenshot)
+Run:
+docker run -d --name mydemo -p 3306:3306 -e MYSQL_ROOT_PASSWORD=student123 mysql:8.0
+Explanation
+Part	Meaning
+-d	run in background
+--name mydemo	container name
+-p 3306:3306	port mapping
+MYSQL_ROOT_PASSWORD	root password
+Container will start.
+Step 9 — Login into MySQL Container
+(Page 2 bottom command)
+Run:
+docker exec -it mydemo mysql -uroot -pstudent123
+Now MySQL terminal opens:
+mysql>
+Step 10 — Create Database
+(Page 3 screenshot)
+Run:
+create database aadesh;
+Output
+Query OK
+Step 11 — Use Database
+use aadesh;
+Step 12 — Create Table
+(Page 3 image)
+Run:
+create table test(
+name varchar(50),
+lastname varchar(50)
+);
+Step 13 — Insert Data
+insert into test values("aadesh","sharma");
+Step 14 — Check Data
+select * from test;
+Output
+aadesh | sharma
+Step 15 — Insert More Rows
+(Page 3 lower screenshot)
+Run:
+insert into test values
+("yash","shitty"),
+("saish","Bhagane"),
+("Bisha","Doini");
+Step 16 — Display Table
+select * from test;
+Output:
+aadesh  sharma
+yash    shitty
+saish   Bhagane
+Bisha   Doini
+Step 17 — Exit MySQL
+exit
