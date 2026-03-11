@@ -163,3 +163,263 @@ Argo will automatically sync and update deployment.
 You will see
 Healthy
 Synced
+
+
+
+Practical 9 — Exact Steps
+Step 1 — Open PowerShell as Administrator
+(Page 1 screenshot)
+Press
+Windows → search "PowerShell"
+Right click → Run as Administrator
+You should see:
+PS C:\Windows\system32>
+Step 2 — Go to Desktop
+(Page 1)
+Run
+cd C:\Users\YOUR_USERNAME\Desktop
+Example in the PDF:
+cd C:\Users\user-25\Desktop
+Step 3 — Create Folder
+(Page 2 screenshot)
+Run
+mkdir kafka-demo
+Output will show folder created.
+Step 4 — Enter Folder
+(Page 2)
+Run
+cd .\kafka-demo
+Now location becomes
+C:\Users\USERNAME\Desktop\kafka-demo
+Step 5 — Create YAML File
+(Page 3 shows the code)
+Create a file named
+docker-compose.yaml
+You can create it using Notepad or VS Code.
+Paste this code inside:
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+This code is visible on page 3 of the PDF.
+Save the file inside:
+Desktop/kafka-demo
+(Page 4 screenshot shows the file saved.)
+Step 6 — Check File
+(Page 5)
+Run
+dir
+You should see
+docker-compose.yaml
+Step 7 — Start Docker Desktop
+(Page 5)
+Open Docker Desktop
+Just start it and wait until
+Docker running
+Step 8 — Run Docker Compose
+(Page 5)
+Run
+docker compose up -d
+If error comes then run
+docker compose -f docker-compose.yaml up -d
+(Page 6 screenshot shows containers starting.)
+This will start:
+Zookeeper container
+Kafka container
+Step 9 — Check Containers
+(Page 6)
+Run
+docker ps
+You should see
+zookeeper
+kafka
+running containers.
+Step 10 — Create Kafka Topic
+(Page 7)
+Run
+docker exec -it kafka kafka-topics --create --topic quick-demo --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+Output
+Created topic quick-demo
+Step 11 — Describe Topic
+(Page 7 screenshot)
+Run
+docker exec -it kafka kafka-topics --describe --topic quick-demo --bootstrap-server localhost:9092
+Output will show
+Topic: quick-demo
+PartitionCount:1
+ReplicationFactor:1
+Step 12 — Start Producer
+(Page 8 / 11)
+Run
+docker exec -it kafka kafka-console-producer --topic quick-demo --bootstrap-server localhost:9092
+Now terminal waits for input.
+Type messages like:
+hello
+test message
+soa practical
+Step 13 — Start Consumer
+(Page 10)
+Open another PowerShell window
+Go to same directory
+cd C:\Users\USERNAME\Desktop\kafka-demo
+Run
+docker exec -it kafka kafka-console-consumer --topic quick-demo --bootstrap-server localhost:9092
+Step 14 — Test Messaging
+(Page 11)
+Now
+Producer terminal → type
+hello
+test kafka
+soa lab
+Consumer terminal → will automatically display the same messages.
+This shows Producer → Consumer communication.
+Final Output
+(Page 12)
+Producer sends messages and consumer receives them.
+Example:
+Producer
+hello
+soa
+docker kafka
+Consumer
+hello
+soa
+docker kafka
+
+
+
+Practical 8 — Exact Steps
+Step 1 — Open PowerShell as Administrator
+(Page 1 screenshot)
+Press Windows key
+Search
+PowerShell
+Right click → Run as Administrator
+You will see
+PS C:\Windows\system32>
+Step 2 — Open Docker Desktop
+(Page 2 screenshot)
+Open Docker Desktop normally (not as admin).
+Kubernetes and Minikube require Docker running.
+Wait until Docker shows
+Docker running
+Step 3 — Enable Hyper-V
+(Page 2)
+Run this command in PowerShell:
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+Then type
+Y
+Computer will restart.
+After restart → open PowerShell as admin again.
+Step 4 — Create kubectl Folder
+(Page 3 screenshot)
+Add path:
+$env:PATH += ";c:\kubectl"
+Create directory:
+New-Item -ItemType Directory -Path "c:\kubectl" -Force
+This will create
+C:\kubectl
+Step 5 — Download kubectl
+(Page 4)
+Run the command below exactly together (inside Invoke-WebRequest).
+Important: The symbol at end is **backtick** not'`.
+Invoke-WebRequest `
+-OutFile "c:\kubectl\kubectl.exe" `
+-Uri "https://storage.googleapis.com/kubernetes-release/release/$(Invoke-RestMethod https://storage.googleapis.com/kubernetes-release/release/latest.txt)/bin/windows/amd64/kubectl.exe"
+kubectl will download into
+C:\kubectl
+Step 6 — Open New PowerShell
+(Page 5 screenshot)
+Close PowerShell and open again Run as Administrator.
+Then go to root directory:
+cd..
+cd..
+Until you reach
+PS C:\
+Step 7 — Verify kubectl
+(Page 5)
+Run:
+kubectl version --client
+Example output:
+Client Version: v1.32
+Step 8 — Install Minikube
+(Page 6–7)
+If winget fails, install manually.
+Go to Chrome
+Search
+minikube
+Open official site
+https://minikube.sigs.k8s.io
+Copy the command and run in PowerShell:
+New-Item -Path 'c:\' -Name 'minikube' -ItemType Directory -Force
+Invoke-WebRequest -OutFile 'c:\minikube\minikube.exe' -Uri https://github.com/kubernetes/minikube/releases/latest/download/minikube-windows-amd64.exe
+Step 9 — Add Minikube to PATH
+(Page 7)
+Run:
+$env:PATH += ";C:\minikube"
+Check path:
+$env:PATH
+You should see
+C:\minikube
+at the end.
+Step 10 — Start Minikube
+(Page 7–8)
+Run
+minikube start --driver=hyperv
+Minikube will install Kubernetes cluster.
+You will see downloading messages.
+Step 11 — Check Minikube Status
+(Page 8 screenshot)
+Run
+minikube status
+Output should show
+host: Running
+kubelet: Running
+apiserver: Running
+Step 12 — Check Kubernetes Node
+(Page 9)
+Run
+kubectl get nodes
+Example output
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   ...
+Step 13 — Deploy Application
+(Page 9 screenshot)
+Run
+kubectl create deployment hello-minikube --image=kibase/echo-server:1.0.0
+Output
+deployment.apps/hello-minikube created
+Step 14 — Expose Deployment
+(Page 10)
+Run
+kubectl expose deployment hello-minikube --type=NodePort --port=8080
+Output
+service/hello-minikube exposed
+Step 15 — Get Application URL
+(Page 10 screenshot)
+Run
+minikube service hello-minikube --url
+Example output
+http://172.25.145.140:32696
+Open this URL in browser.
+Application will run.
