@@ -1,0 +1,80 @@
+**-----P7 Implementing Audio in Unity-----**
+
+**AIM: Implementing Audio in Unity**
+
+---
+
+**SETUP:**
+- Create a new **2D project** in Unity
+- In Hierarchy: right click → **Audio → Audio Source**
+- Audio Source object select → Inspector settings:
+   - Priority = 128
+   - Volume = 1
+   - Pitch = 1
+   - Stereo Pan = 0
+   - Spatial Blend = 0
+
+---
+
+**###Audio Script###**
+Main Camera select → Add Component → New Script → name it `Audio`
+
+script:
+```csharp
+using UnityEngine;
+
+public class Audio : MonoBehaviour
+{
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        //get the AudioSource component attached to this GameObject
+        audioSource = GetComponent<AudioSource>();
+        //check if the AudioSource is assigned
+        if (audioSource == null)
+        {
+            Debug.LogError("AudioSource component not found");
+            return;
+        }
+        audioSource.Stop();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            audioSource.Play();
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            audioSource.Stop();
+        }
+    }
+}
+```
+
+---
+
+**###Adding Audio File###**
+- Go to Google → search **"free mp3 audio download"**
+- Download any free mp3
+- Drag and drop the mp3 file into Unity **Project window → Assets folder**
+
+---
+
+**###Attaching Audio to Main Camera###**
+-main camera click then component>audio>audio source add
+- Select **Main Camera** in Hierarchy
+- In Inspector → **Audio Source** component
+- **Audio Resource** field → drag and drop your downloaded **mp3 file** here
+- **Play On Awake** → unchecked
+
+---
+
+**To Test:**
+- Press ▶ Play
+- Click on **Game window**
+- Press **A key** → audio plays 🔊
+- Press **D key** → audio stops 🔇

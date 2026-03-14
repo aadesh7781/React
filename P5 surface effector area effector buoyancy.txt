@@ -1,0 +1,212 @@
+
+
+**-----P5 Surface Effector and Area Effector-----**
+
+**AIM: Surface Effector and Area Effector**
+
+---
+
+**###PART 1 - Surface Effector###**
+
+**SETUP:**
+- Create a new **2D project** in Unity
+- Create the scene with these objects in Hierarchy:
+   - right click → **2D Object → Sprite → Circle** (this is the player)
+   - right click → **2D Object → Sprite → Square** → make it wide (this is **Ground**)
+   - right click → **2D Object → Sprite → Square** → make it wide (this is **Platform 2**)
+   - right click → **2D Object → Sprite → Square** → make it wide (this is **Platform 3**)
+- Position platforms like staircase on right side, Circle on left side, Ground at bottom
+
+---
+
+**Circle properties:**
+- Select **Circle** → Add Component → **Physics 2D → Rigidbody 2D**:
+   - Body Type = **Dynamic**
+   - Mass = **1**
+   - Linear Damping = **0**
+   - Angular Damping = **0.05**
+   - Gravity Scale = **1**
+   - Collision Detection = **Discrete**
+   - Sleeping Mode = **Start Awake**
+   - Interpolate = **None**
+- Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+- Add Component → New Script → name it `jumpmove`
+
+**Script (same script used for ALL effectors):**
+```csharp
+using UnityEngine;
+
+public class jumpmove : MonoBehaviour
+{
+    public float moveSpeed = 5f;
+    public float jumpForce = 8f;
+    private Rigidbody2D rb;
+    private float moveX;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        moveX = Input.GetAxis("Horizontal");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
+    }
+}
+```
+- In Inspector → Move Speed = **5**, Jump Force = **8**
+
+---
+
+**Platform 2 properties (with Platform Effector):**
+- Select **Platform 2** → Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+- Add Component → **Physics 2D → Platform Effector 2D**:
+   - Use Collider Mask = **checked ✓**
+   - Collider Mask = **Everything**
+   - Rotational Offset = **0**
+   - Use One Way = **checked ✓**
+   - Use One Way Grouping = **unchecked**
+   - Surface Arc = **180**
+
+---
+
+**Platform 3 properties (just Box Collider):**
+- Select **Platform 3** → Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+
+---
+
+**Ground properties (with Surface Effector):**
+- Select **Ground** → Add Component → **Physics 2D → Surface Effector 2D**:
+   - Use Collider Mask = **checked ✓**
+   - Collider Mask = **Everything**
+   - Speed = **1**
+   - Speed Variation = **0**
+   - Force Scale = **0.1**
+- Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **checked ✓**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+
+**To Test:**
+- Press ▶ Play → Arrow keys to move Circle → Space to jump → Circle automatically moves on Ground (Surface Effector) → can jump up through Platform 2 (one way) → Platform 3 is solid
+
+---
+
+**###PART 2 - Area Effector###**
+
+**SETUP:**
+- Make two objects:
+   - right click → **2D Object → Sprite → Square** → make it **small** (this is the **Small Square / player**)
+   - right click → **2D Object → Sprite → Square** → make it **big / green** (this is the **Big Square / water area**)
+- Place Big Square in center of scene, Small Square above it
+
+---
+
+**Small Square properties:**
+- Select **Small Square** → Add Component → **Physics 2D → Rigidbody 2D**:
+   - Body Type = **Dynamic**
+   - Mass = **1**
+   - Linear Damping = **0**
+   - Angular Damping = **0.05**
+   - Gravity Scale = **1**
+   - Collision Detection = **Discrete**
+   - Sleeping Mode = **Start Awake**
+   - Interpolate = **None**
+- Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+
+---
+
+**Big Square properties (Area Effector - for pushing/wind effect):**
+- Select **Big Square** → Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Offset = X 0, Y 0
+   - Size = X 1, Y 1
+   - Edge Radius = **0**
+- Add Component → **Physics 2D → Area Effector 2D**:
+   - Use Collider Mask = **checked ✓**
+   - Collider Mask = **Everything**
+   - Use Global Angle = **unchecked**
+   - Force Angle = **0**
+   - Force Magnitude = **10**
+   - Force Variation = **0**
+   - Force Target = **Rigidbody**
+
+---
+
+**###PART 3 - Area Effector for Water (Buoyancy Effector)###**
+
+**SETUP:**
+- Create a **Circle** (player) and a **big Rectangle** (water)
+- Make the Rectangle **cyan/blue color** (Sprite Renderer → Color → cyan)
+
+---
+
+**Circle (For Water) properties:**
+- Add Component → **Physics 2D → Rigidbody 2D**:
+   - Body Type = **Dynamic**
+   - Mass = **1**
+   - Linear Damping = **0**
+   - Angular Damping = **0.05**
+   - Gravity Scale = **1**
+   - Collision Detection = **Discrete**
+   - Sleeping Mode = **Start Awake**
+- Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **unchecked**
+   - Used By Effector = **unchecked**
+   - Size = X 1, Y 1
+
+---
+
+**Water Rectangle properties (Buoyancy Effector):**
+- Add Component → **Physics 2D → Box Collider 2D**:
+   - Is Trigger = **checked ✓**
+   - Used By Effector = **checked ✓**
+   - Size = X 1, Y 1
+- Add Component → **Physics 2D → Buoyancy Effector 2D**:
+   - Use Collider Mask = **checked ✓**
+   - Collider Mask = **Everything**
+   - Density = **2**
+   - Surface Level = **0.5**
+- Sprite Renderer → Color = **Cyan (water color)**
+
+**To add Buoyancy Effector:**
+- Select Water Rectangle → Add Component → **Physics 2D → Buoyancy Effector 2D**
+
+**To Test:**
+- Press ▶ Play → Circle falls into water rectangle → Buoyancy Effector makes it float/slow down like water! 🌊
+
+---
+
+**Note: Same `jumpmove` script is used for all effector practicals** — no separate scripts needed!

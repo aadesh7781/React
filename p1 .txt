@@ -1,0 +1,117 @@
+-----P1 executing basic C# script-----
+
+###1.	Using if-else statements find the number is odd or not.###
+main camera right click -> create empty -> phir script attach
+script:
+using UnityEngine;
+
+public class prac1 : MonoBehaviour
+{
+    // Your exact function
+    void CheckOdd(int num)
+    {
+        if (num % 2 != 0)
+        {
+            Debug.Log(num + " is odd");
+        }
+        else
+        {
+            Debug.Log(num + " is not odd");
+        }
+    }
+
+    // Call your function in Start to test it
+    void Start()
+    {
+        CheckOdd(7);   // Test with 7
+        CheckOdd(10);  // Test with 10
+    }
+}
+run
+
+###2.	Using switch case calculator grade of a student###
+main camera right click -> create empty -> phir script attach
+script:
+using UnityEngine;
+
+public class prac1 : MonoBehaviour
+{
+    void Start()
+    {
+        int marks = 25;  // You can change this to test
+        GradeCalculator(marks);
+    }
+
+    void GradeCalculator(int marks)
+    {
+        switch (marks / 10)  // Divide by 10 to get tens place
+        {
+            case 10:
+            case 9:
+                Debug.Log("Grade: A");
+                break;
+            case 8:
+                Debug.Log("Grade: B");
+                break;
+            case 7:
+                Debug.Log("Grade: C");
+                break;
+            case 6:
+                Debug.Log("Grade: D");
+                break;
+            default:
+                Debug.Log("Grade: F");
+                break;
+        }
+    }
+}
+
+
+###3. using for loop find sum of n number ###
+main camera right click -> create empty -> phir script attach
+script:
+
+using UnityEngine;
+
+public class prac1 : MonoBehaviour
+{
+    void Start()
+    {
+        int n = 5; // Change this to sum first n numbers
+        int sum = 0;
+
+        // For loop to add numbers from 1 to n
+        for (int i = 1; i <= n; i++)
+        {
+            sum += i; // sum = sum + i
+        }
+
+        Debug.Log("Sum of first " + n + " numbers is: " + sum);
+    }
+}
+###4.Using while loop find sum of all even numbers in a given range. ###
+main camera right click -> create empty -> phir script attach
+script:
+using UnityEngine;
+
+public class SumEvenNumbers : MonoBehaviour
+{
+    void Start()
+    {
+        int start = 1;   // Starting number of the range
+        int end = 10;    // Ending number of the range
+        int sum = 0;
+        int i = start;
+
+        while (i <= end)
+        {
+            if (i % 2 == 0)   // Check if the number is even
+            {
+                sum += i;     // Add it to sum
+            }
+            i++;               // Move to next number
+        }
+
+        Debug.Log("Sum of even numbers from " + start + " to " + end + " is: " + sum);
+    }
+}

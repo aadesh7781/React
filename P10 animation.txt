@@ -1,0 +1,186 @@
+
+
+**-----P10 Implement Animation in Unity-----**
+
+**AIM: Implement Animation in Unity**
+
+---
+
+**###PART A - Without Script###**
+
+**Step 1 - Download Character and Animations from Mixamo:**
+- Go to **mixamo.com** → Sign up / Log in
+- Click **Characters** tab → select any character
+- Click **Animations** tab → search **"Running"** → select **Running**
+- Click **Download** → Download Settings:
+   - Format = **FBX Binary (.fbx)**
+   - Skin = **With Skin** (for first/character animation only)
+   - Frames per Second = **30**
+   - Keyframe Reduction = **none**
+   - Click **Download**
+- Now search **"Walking"** → select **Walking** → Download:
+   - Format = **FBX Binary (.fbx)**
+   - Skin = **Without Skin**
+   - Click **Download**
+- Same way download **"Breathing"** animation → **Without Skin**
+- You will have 3 FBX files total
+
+---
+
+**Step 2 - Setup Unity Project:**
+- Create a new **3D project** in Unity
+- Create a new Scene → **File → New Scene** → save it
+- In Project window → right click Assets → **Create → Folder** → name it **"animations"**
+- Drag and drop all **3 FBX files** into the **animations** folder
+
+---
+
+**Step 3 - Add Character to Scene:**
+- In Project → animations folder → drag the **character FBX (With Skin one)** into Scene view
+- Character will appear in scene
+
+---
+
+**Step 4 - Extract Materials and Textures:**
+- Select the **character FBX** in Project window
+- In Inspector → click **Materials** tab → click **Extract Materials** button → confirm save location as your animations folder
+- Then click **Extract Textures** button → confirm location
+- Character will now show proper colors/textures
+
+---
+
+**Step 5 - Enable Loop Time for all Animations:**
+- In Project → animations folder → click the **small triangle** next to each FBX file to expand it
+- Click the **green triangle** (animation clip inside) → Inspector opens → click **Edit**
+- Check **Loop Time = ✓**
+- Click **Apply**
+- Do this for **all 3 animations** (running, walking, breathing)
+
+---
+
+**Step 6 - Create Animator Controller:**
+- In Project → animations folder → right click → **Create → Animator Controller** → name it **"controller"**
+- Double click **controller** → Animator window opens
+- Drag and drop all **3 animation clips** (running, walking, breathing) into the Animator window
+- They will connect automatically
+
+---
+
+**Step 7 - Make Transitions:**
+- In Animator window → right click **running** → **Make Transition** → drag arrow to **walking**
+- Right click **walking** → **Make Transition** → drag arrow to **breathing**
+- Right click **breathing** → **Make Transition** → drag arrow to **running**
+- You should have: running → walking → breathing → running (cycle)
+
+---
+
+**Step 8 - Set Exit Time on Transitions:**
+- Click each **transition arrow** in Animator window
+- In Inspector → **Has Exit Time = checked ✓**
+- Click **Settings** → change **Exit Time** value (e.g. 0.15)
+- Do this for all transition arrows
+
+---
+
+**Step 9 - Add Animator to Character:**
+- Select **character** in Hierarchy
+- In Inspector → Add Component → search **"Animator"** → add it
+- **Controller field** → drag your **controller** from Project window here
+- Culling Mode = **Always Animate**
+
+**To Test:**
+- Press ▶ Play → character will automatically cycle through running → walking → breathing animations!
+
+---
+---
+
+**###PART B - With Script###**
+
+**Step 1 - Create New Controller:**
+- In Project → animations folder → right click → **Create → Animator Controller** → name it **"controller2"**
+- Double click **controller2** → Animator window opens
+- Drag **breathing, running, walking** clips into Animator window
+- **breathing** will be default (orange = default state)
+
+---
+
+**Step 2 - Make Transitions in controller2:**
+- Right click **breathing** → **Make Transition** → drag to **running** (both ways)
+- Right click **breathing** → **Make Transition** → drag to **walking** (both ways)
+- You should have:
+   - breathing ↔ running
+   - breathing ↔ walking
+
+---
+
+**Step 3 - Add Parameters:**
+- In Animator window → click **Parameters** tab (top left)
+- Click **+** → select **Bool** → name it **"Walk"**
+- Click **+** → select **Bool** → name it **"Run"**
+
+---
+
+**Step 4 - Set Transitions with Conditions:**
+- Click arrow from **breathing → running**:
+   - **Has Exit Time = unchecked**
+   - Conditions → click **+** → select **Run** → **true**
+- Click arrow from **running → breathing**:
+   - **Has Exit Time = unchecked**
+   - Conditions → click **+** → select **Run** → **false**
+- Click arrow from **breathing → walking**:
+   - **Has Exit Time = unchecked**
+   - Conditions → click **+** → select **Walk** → **true**
+- Click arrow from **walking → breathing**:
+   - **Has Exit Time = unchecked**
+   - Conditions → click **+** → select **Walk** → **false**
+
+---
+
+**Step 5 - Create Script:**
+- In Project → right click → **Create → C# Script** → name it **"Animation_Script"**
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Animation_Script : MonoBehaviour
+{
+    private Animator myanim;
+    bool iswalking = false;
+    bool isrunning = false;
+
+    void Start()
+    {
+        myanim = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        iswalking = Input.GetKey(KeyCode.W);
+        myanim.SetBool("Walk", iswalking);
+
+        isrunning = Input.GetKey(KeyCode.D);
+        myanim.SetBool("Run", isrunning);
+    }
+}
+```
+
+---
+
+**Step 6 - Bind to Character:**
+- Select **character** in Hierarchy
+- In Inspector → **Animator component** → **Controller field** → change to **controller2**
+- Add Component → drag/attach **Animation_Script** to character
+
+Character Inspector should show:
+- Animator → Controller = **controller2**
+- Animation_Script (Script) attached
+
+---
+
+**To Test:**
+- Press ▶ Play → **Game window click**
+- **W key** → character walks
+- **D key** → character runs
+- No key → character breathes (idle)

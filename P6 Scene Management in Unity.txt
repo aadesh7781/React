@@ -1,0 +1,112 @@
+**-----P6 Scene Management in Unity-----**
+
+**AIM: Scene Management in Unity**
+
+---
+
+**###Step 1 - Create New 2D Project###**
+- Create a new **2D project** in Unity
+- You need **2 scenes** → current scene + one more scene named **"test"**
+
+**Create the "test" scene:**
+- File → **New Scene** → save it → name it **"test"**
+- Put any object in it (e.g. a Square)
+- Ctrl + S to save
+- Go back to your main scene
+
+---
+
+**###Step 2 - Add Both Scenes to Build Settings###**
+- File → **Build Profiles**
+- Click **Add Open Scenes** → main scene added (index 0)
+- Double click **test** scene in Project window to open it
+- File → **Build Profiles** → **Add Open Scenes** → test scene added (index 1)
+- Double click main scene to go back to it
+
+---
+
+**###Step 3 - Create 4 Buttons###**
+- In Hierarchy → right click → **UI → Legacy → Button**
+- Rename it → expand button → click **Text** child → Inspector → change text to **"LOAD SCENE"**
+- Repeat 3 more times and rename:
+   - **"LOAD ASYNC SCENE"**
+   - **"LOAD ADDITIVE SCENE"**
+   - **"UNLOAD SCENE"**
+- Arrange all 4 buttons on canvas (2x2 layout)
+
+---
+
+**###Step 4 - Create Script###**
+- In Project → right click → **Create → C# Script** → name it **"ScriptManager"**
+- All 4 button functions are in **ONE single script**:
+
+```csharp
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class ScriptManager : MonoBehaviour
+{
+    // LOAD SCENE button
+    public void LoadScene()
+    {
+        SceneManager.LoadScene("test");
+    }
+
+    // LOAD ADDITIVE SCENE button
+    public void LoadSceneAdd()
+    {
+        SceneManager.LoadScene("test", LoadSceneMode.Additive);
+    }
+
+    // UNLOAD SCENE button
+    public void UnloadScene()
+    {
+        SceneManager.UnloadSceneAsync("test");
+    }
+
+    // LOAD ASYNC SCENE button
+    public void StartLoading()
+    {
+        StartCoroutine(LoadAsync());
+    }
+
+    IEnumerator LoadAsync()
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync("test");
+
+        while (!operation.isDone)
+        {
+            Debug.Log("Loading : " + (operation.progress * 100) + "%");
+            yield return null;
+        }
+    }
+}
+```
+
+---
+
+**###Step 5 - Attach Script to Buttons###**
+- Select **LOAD SCENE** button → Add Component → attach **ScriptManager** script
+- In Inspector → Button component → **On Click ()** → click **+**
+- Drag **LOAD SCENE** button into the object field
+- Click **No Function** → **ScriptManager → LoadScene()**
+
+- Select **LOAD ADDITIVE SCENE** button → Add Component → attach **ScriptManager**
+- **On Click ()** → **+** → drag button → **ScriptManager → LoadSceneAdd()**
+
+- Select **UNLOAD SCENE** button → Add Component → attach **ScriptManager**
+- **On Click ()** → **+** → drag button → **ScriptManager → UnloadScene()**
+
+- Select **LOAD ASYNC SCENE** button → Add Component → attach **ScriptManager**
+- **On Click ()** → **+** → drag button → **ScriptManager → StartLoading()**
+
+---
+
+**###Output###**
+- Press ▶ Play → 4 buttons visible on screen
+- **LOAD SCENE** → replaces current scene with test scene
+- **LOAD ADDITIVE SCENE** → loads test scene on top of current scene (both visible)
+- **UNLOAD SCENE** → removes the additively loaded test scene
+- **LOAD ASYNC SCENE** → loads test scene in background, Console shows **"Loading: 0%"** → **"Loading: 90%"** 👍

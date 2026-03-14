@@ -1,0 +1,79 @@
+-----P2 Implementing physical characteristics (translation, rotation and scaling) on a 2D object.------
+
+Create project 2d
+Then for creating object >main camera>right click>2d object>sprite>square
+Then add component >add component>physics 2d>Rigidbody 2d> gravity =0.
+go to edit > project settings>player>active handling input>change to both
+square>add component >script
+**TRANSITION SCRIPT**[if it moves with arrows done]
+using UnityEngine;
+
+public class prac2 : MonoBehaviour
+{
+    public float speed=1f;
+    private Rigidbody2D rb2d;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        rb2d=GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float moveX=Input.GetAxis("Horizontal");
+        float moveY=Input.GetAxis("Vertical");
+        Vector2 movement=new Vector2(moveX,moveY);
+        rb2d.linearVelocity=movement*speed;
+
+    }
+}
+
+**SCALING SCRIPT**[use arrows up down for scaling ]
+using UnityEngine;
+
+public class prac2 : MonoBehaviour
+{
+    public float scaleSpeed=1f;
+    public float minScale=0.2f;
+    public float maxScale=5f;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float scaleInput=Input.GetAxis("Vertical");
+        Vector3 newScale=transform.localScale+Vector3.one * scaleInput * scaleSpeed * Time.deltaTime;
+
+        newScale.x=Mathf.Clamp(newScale.x, minScale, maxScale);
+        newScale.y=Mathf.Clamp(newScale.y, minScale, maxScale);
+        newScale.z=1;
+        transform.localScale=newScale;
+    }
+}
+
+
+**ROTATION SCRIPT**[ITLL ROTATE WITH ARROWS]
+using UnityEngine;
+
+public class prac2 : MonoBehaviour
+{
+    public float rotationSpeed=150f;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float rotateInput=Input.GetAxis("Horizontal");
+        transform.Rotate(0, 0, -rotateInput*rotationSpeed*Time.deltaTime);
+    }
+}
+

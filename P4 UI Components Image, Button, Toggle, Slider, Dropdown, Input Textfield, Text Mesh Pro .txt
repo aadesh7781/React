@@ -1,0 +1,300 @@
+**-----P4 Demo on Unity UI Components-----**
+
+**AIM: Demo on Unity UI Components**
+
+---
+
+**###a. Add Image Component###**
+
+**Step 1:** Upload your png image into project (drag and drop into Assets folder in Project window)
+
+**Step 2:** Select the image in Assets → In Inspector → change **Texture Type** to **Sprite (2D and UI)** → click **Apply**
+
+**Step 3:** In Hierarchy camera→ right click → **UI → Image**
+(A Canvas will auto-create with the Image inside it)
+
+**Step 4:** Select the **Image** object in Hierarchy → In Inspector → **Source Image** field → click the circle icon → select your uploaded sprite image
+
+**Step 5:** Image will appear in Game view
+
+**Step 6:** Now add script and Rigidbody 2D to the Image object:
+- Select Image → Add Component → **Physics 2D → Rigidbody 2D**
+- Set **Gravity Scale = 0**
+- Select Image → Add Component → New Script → name it `flower`
+
+script:
+```csharp
+using UnityEngine;
+
+public class flower : MonoBehaviour
+{
+    public float rotationSpeed = 150f;
+
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+        float rotateInput = Input.GetAxis("Horizontal");
+        //A= -1, D = +1
+        transform.Rotate(0, 0, -rotateInput * rotationSpeed * Time.deltaTime);
+    }
+}
+```
+
+**To Test:**
+- Press ▶ Play → **A key** = rotate left, **D key** = rotate right
+
+---
+
+**###b. Button###**
+
+**Step 1:** In Hierarchy → right click → **UI → Legacy → Button**
+(Canvas auto-creates with Button inside)
+
+**Step 2:** Select **Button** object → Add Component → New Script → name it `button`
+
+script:
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class button : MonoBehaviour
+{
+    public Button button1;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        button1.onClick.AddListener(ButtonClicked);
+    }
+
+    // Update is called once per frame
+    public void ButtonClicked()
+    {
+        Debug.Log("Button is clicked");
+    }
+}
+```
+
+**Step 3:** Select **Button** object → In Inspector → **button (Script)** component → **Button1 field** → drag the Button object from Hierarchy and drop it here
+
+**Step 4:** In Inspector → **Button component** → **On Click ()** section → click **+** button → drag Button object into the field → click **No Function** → select **button → ButtonClicked()**
+
+**To Test:**
+- Press ▶ Play → click the **Click** button → Console shows **"Button is clicked"**
+
+---
+
+**###c. Toggle###**
+
+**Step 1:** In Hierarchy → right click → **UI → Legacy → Toggle**
+
+**Step 2:** Select **Toggle** object → Add Component → New Script → name it `toggle1`
+
+script:
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+public class toggle1 : MonoBehaviour
+{
+    public Toggle toggle;
+
+    void Start()
+    {
+
+    }
+
+    public void UserValueChanged(bool value)
+    {
+        Debug.Log("Toggle Value Changes: " + value);
+    }
+}
+```
+
+**Step 3:** Select **Toggle** object → In Inspector → **Toggle component** → **On Value Changed** section → click **+** → drag Toggle object into field → click **No Function** → select **toggle1 → UserValueChanged**
+
+**To Test:**
+- Press ▶ Play → click the toggle checkbox → Console shows **"Toggle Value Changes: True"** or **"False"**
+
+---
+
+**###d. Slider###**
+
+**Step 1:** In Hierarchy → right click → **UI → Slider**
+
+**Step 2:** Select **Slider** object → In Inspector:
+- **Min Value = 0**
+- **Max Value = 111**
+- **Whole Numbers = unchecked**
+
+**Step 3:** Select **Slider** object → Add Component → New Script → name it `slider`
+
+script:
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+public class slider : MonoBehaviour
+{
+    void Start()
+    {
+
+    }
+
+    public void SliderValueChanged(float value)
+    {
+        Debug.Log("Slider Value Changed:" + value);
+    }
+}
+```
+
+**Step 4:** Select **Slider** object → In Inspector → **Slider component** → **On Value Changed** section → click **+** → drag Slider object into field → click **No Function** → select **slider → SliderValueChanged**
+
+**To Test:**
+- Press ▶ Play → drag the slider → Console shows **"Slider Value Changed: 45.9275"** (value keeps changing)
+
+---
+
+**###e. Dropdown###**
+
+**Step 1:** In Hierarchy → right click → **UI → Dropdown - TextMeshPro**
+- A **TMP Importer** popup will appear → click **Import TMP Essentials** → close it
+
+**Step 2:** Select **Dropdown** object → In Inspector → **Options** → add 3 options:
+- One piece
+- Demon slayer
+- Bleach
+
+**Step 3:** Select **Dropdown** object → Add Component → New Script → name it `Dropdown`
+
+script:
+```csharp
+using UnityEngine;
+using TMPro;
+
+public class Dropdown : MonoBehaviour
+{
+    [SerializeField] private TMP_Dropdown m_Dropdown;
+
+    void Start()
+    {
+
+    }
+
+    public void GetDropDownValue()
+    {
+        int picked = m_Dropdown.value;
+        string selectedOption = m_Dropdown.options[picked].text;
+        Debug.Log(selectedOption);
+    }
+
+    void Update()
+    {
+
+    }
+}
+```
+
+**Step 4:** Select **Dropdown** object → In Inspector → **Dropdown (Script)** → **m_Dropdown field** → drag the Dropdown object from Hierarchy here
+
+**Step 5:** In Inspector → **TMP_Dropdown component** → **On Value Changed** section → click **+** → drag Dropdown object → click **No Function** → select **Dropdown → GetDropDownValue()**
+
+**To Test:**
+- Press ▶ Play → select any option from dropdown → Console shows **"One piece"** / **"Demon slayer"** / **"Bleach"**
+
+---
+
+**###f. Input Textfield###**
+
+**Step 1:** In Hierarchy → right click → **UI → Legacy → Input Field**
+
+**Step 2:** Select **InputField** object → Add Component → New Script → name it `inputtextfield`
+
+script:
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+public class inputtextfield : MonoBehaviour
+{
+    public InputField inputfield;
+
+    void Start()
+    {
+
+    }
+
+    public void InputFieldValueChanged(string value)
+    {
+        Debug.Log("Input field value changed: " + value);
+    }
+
+    // Update is called once per frame
+}
+```
+
+**Step 3:** Select **InputField** object → In Inspector → **Input Field component** → **On Value Changed** section → click **+** → drag InputField object → click **No Function** → select **inputtextfield → InputFieldValueChanged**
+
+**To Test:**
+- Press ▶ Play → click the input field → type anything → Console shows **"Input field value changed: a"**, **"ab"**, **"abc"**, **"abcd"** (prints every letter as you type)
+
+---
+
+**###g. Text Mesh Pro###**
+
+**Step 1:** In Hierarchy → right click → **UI → Text - TextMeshPro**
+- TMP Importer popup → click **Import TMP Essentials** → close
+
+**Step 2:** This Text object will be used to **display the selected Dropdown value** on screen
+
+**Step 3:** Select **Dropdown** object → In Inspector → **Dropdown (Script)** → **output field** → drag the **Text (TMP)** object from Hierarchy here
+
+**Step 4:** Add Component → New Script → name it `text1`
+
+script:
+```csharp
+using UnityEngine;
+using TMPro;
+
+public class text1 : MonoBehaviour
+{
+    public TextMeshProUGUI output;
+
+    public void HandleInput(int val)
+    {
+        if (val == 0)
+        {
+            output.text = "One Piece";
+        }
+        if (val == 1)
+        {
+            output.text = "Demon Slayer";
+        }
+        if (val == 2)
+        {
+            output.text = "Bleach";
+        }
+    }
+
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+}
+```
+
+**Step 5:** Select **Dropdown** object → **On Value Changed** → click **+** → drag **Dropdown** object → select **text1 → HandleInput**
+
+**Step 6:** Select **text1 script** on Text object → **Output field** → drag **Text (TMP)** object here
+
+**To Test:**
+- Press ▶ Play → select **One piece** from dropdown → Screen shows **"One Piece"** in big text
+- Select **Demon Slayer** → text changes to **"Demon Slayer"**
+- Select **Bleach** → text changes to **"Bleach"**

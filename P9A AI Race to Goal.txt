@@ -1,0 +1,226 @@
+**-----P9A AI Race to Goal-----**
+
+**AIM: AI player racing to goal**
+
+---
+
+**SETUP:**
+- Create a new **3D project** in Unity
+- Edit → Project Settings → Player → **Active Input Handling → Both** → Apply → Restart Unity
+
+---
+
+**###Step 1 - Create Ground###**
+- In Hierarchy → right click → **3D Object → Plane** → rename it **"Ground"**
+- In Assets → right click → **Create → Material** → change color to **pink/red**
+- Drag and drop material onto Ground
+- Ground Transform:
+   - Position: X = 0.66, Y = 0, Z = 0
+   - Scale: X = 3, Y = 1, Z = 3
+
+---
+
+**###Step 2 - Create Objects###**
+- right click → **3D Object → Capsule** → rename **"player"**
+- right click → **3D Object → Capsule** → rename **"AI"**
+- right click → **3D Object → Cube** → rename **"goal"**
+- Create separate **Materials** for each → change colors
+- Positions:
+   - **player**: X = -5.33, Y = 1.19, Z = 7.32  scale 111
+   - **AI**: X = -6.16, Y = 1.05, Z = 8.75  scale 111
+   - **goal**: X = 0, Y = 0.5, Z = 8  scale  11 9.8612
+
+---
+
+**###Step 3 - Main Camera###**
+- Position: X = -3.14, Y = 14.08, Z = -1.27
+- Rotation: 000 scale 111
+
+**###Step 4 - Setup GOAL###**
+- Select **goal** → Add Component → **Physics → Sphere Collider**
+- Sphere Collider → **Is Trigger = checked ✓**
+
+---
+
+**###Step 5 - Setup player###**
+- Select **player** → Add Component → **Physics → Rigidbody**:
+   - Mass = **1**
+   - Drag = **0**
+   - Angular Drag = **0.05**
+   - Use Gravity = **unchecked**
+   - Is Kinematic = **unchecked**
+   - Interpolate = **None**
+   - Collision Detection = **Discrete**
+   - Constraints → Freeze Rotation = **X ✓ Y ✓ Z ✓**
+- Tag player → Inspector top → Tag dropdown → **Add Tag** → create **"Player"** → assign to player object
+- Tag AI → same way → create **"Enemy"** → assign to AI object
+
+---
+
+**###Step 6 - Setup AI###**
+- Select **AI** → Add Component → search **"Nav Mesh Agent"** → add it
+
+---
+
+**###Step 7 - Install AI Navigation Package###**
+- Go to **Window → Package Manager → Unity Registry** → search **"AI Navigation"** → Install
+
+---
+
+**###Step 8 - Create NavMesh###**
+- In Hierarchy → right click → **Create Empty** → rename **"Nav Mesh"**
+- Select **Nav Mesh** → Add Component → search **"NavMesh Surface"** → add it
+- NavMesh Surface settings:
+   - Agent Type = **Humanoid**
+   - Default Area = **Walkable**
+   - Use Geometry = **Render Meshes**
+- Click **Bake** button
+
+---
+
+**###Step 9 - Create Empty GameObject###**
+- right click Hierarchy → **Create Empty** → rename **"GAMEOBJECT"**
+
+---
+
+**###Step 10 - Create 4 Scripts###**
+
+**Script 1 - AI_Player.cs** → attach to **AI** capsule:
+```csharp
+using UnityEngine;
+using UnityEngine.AI;
+
+public class AI_Player : MonoBehaviour
+using UnityEngine;
+using UnityEngine.AI;
+
+public class AI_Player : MonoBehaviour
+{
+    public Transform target;
+    public float speed = 2.0f;
+    private NavMeshAgent agent;
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = speed;
+    }
+
+    void Update()
+    {
+        if (target != null)
+        {
+            agent.SetDestination(target.position);
+        }
+    }
+}
+```
+- In Inspector → **Target field** → drag **goal** cube here
+- Speed = **3.5**
+
+---
+
+**Script 2 - Player.cs** → attach to **player** capsule:
+```csharp
+using UnityEngine;
+
+public class player : MonoBehaviour
+{
+    public float speed = 5f;
+    Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void FixedUpdate()
+    {
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        Vector3 move = new Vector3(h, 0, v) * speed;
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+    }
+}
+
+---
+
+**Script 3 - goal.cs** → attach to **goal** cube:
+using UnityEngine;
+
+public class goal : MonoBehaviour
+{
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("player wins");
+            Time.timeScale = 0;
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Ai Win");
+            Time.timeScale = 0;
+        }
+    }
+
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+
+    }
+}
+
+---
+
+**Script 4 - GameManager.cs** → attach to **GAMEOBJECT** empty object:
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    public GameObject player;
+    public GameObject ai;
+    public GameObject goal;
+
+    void Update()
+    {
+        float playerDistance = Vector3.Distance(player.transform.position, goal.transform.position);
+        float aiDistance = Vector3.Distance(ai.transform.position, goal.transform.position);
+
+        if (playerDistance < 3.0f)
+        {
+            Debug.Log("Player Wins! ");
+            QuitGame();
+        }
+        else if (aiDistance < 3.0f)
+        {
+            Debug.Log("AI wins !");
+        }
+    }
+
+    void QuitGame()
+    {
+        Application.Quit();
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+    }
+}- In Inspector → **GameManager script**:
+   - **Player field** → drag **player** capsule
+   - **Ai field** → drag **AI** capsule
+   - **Goal field** → drag **goal** cube
+
+---
+
+**To Test:**
+- Press ▶ Play → **Game window click** → Arrow keys to move player
+- AI automatically moves towards goal
+- Player reaches goal first → Console: **"Player Wins!"** → game stops
+- AI reaches goal first → Console: **"AI wins!"** 👍

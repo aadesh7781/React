@@ -1,0 +1,97 @@
+**-----P8 Find Range and Angle Between Two 3D Objects-----**
+
+**SETUP:**
+- Open Unity Hub → New Project → **Universal 3D** → name it `3dproj` → Create
+- In Hierarchy: right click → **3D Object → Cube** (this is the TARGET)
+- right click → **3D Object → Sphere** (this is the PLAYER/checker)
+- Position them apart in the scene
+Cube position:
+
+X = -2, Y = 0, Z = 0
+
+Sphere position:
+
+X = 2, Y = 0, Z = 0
+
+Main Camera position:
+
+X = 0, Y = 2, Z = -8
+Rotation X = 15, Y = 0, Z = 0
+
+
+**###1. Range Checker Script###**
+Select **Sphere** → Add Component → New Script → name it `rangechecker`
+
+script:
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class rangechecker : MonoBehaviour
+{
+    [SerializeField] Transform target;
+    [SerializeField] float range = 5;
+    private bool targetWasInRange = false;
+
+    void Update()
+    {
+        var distance = (target.position - transform.position).magnitude;
+
+        if (distance <= range && targetWasInRange == false)
+        {
+            Debug.LogFormat("Target {0} entered range", target.name);
+            targetWasInRange = true;
+        }
+        else if (distance > range && targetWasInRange == true)
+        {
+            Debug.LogFormat("Target {0} exited range", target.name);
+            targetWasInRange = false;
+        }
+    }
+}
+
+**In Inspector (Sphere selected):**
+- Drag **Cube** into the **Target** field
+- Set **Range = 2**
+
+**To Test:**
+- Press ▶ Play → move Sphere close to Cube → Console shows **"Target Cube entered range"**
+- Move it away → Console shows **"Target Cube exited range"**
+
+---
+
+**###2. Degree (Angle) Checker Script###**
+Disable RangeChecker script on Sphere → Add Component → New Script → name it `degreeCheckerr`
+
+script:
+using UnityEngine;
+
+public class degreecheckerr : MonoBehaviour
+{
+    [SerializeField] Transform target;
+    [SerializeField] float moveSpeed = 5f;
+
+    void Update()
+    {
+        var direction = target.position - transform.position;
+        var directionToTarget = direction.normalized;
+        var dotproduct = Vector3.Dot(transform.forward, directionToTarget);
+        var angle = Mathf.Acos(dotproduct);
+
+        Debug.LogFormat("Angle to target {0} is {1} degrees", target.name, angle * Mathf.Rad2Deg);
+
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+        Vector3 moveDirection = new Vector3(moveX, 0, moveZ);
+        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+    }
+}
+**In Inspector (Sphere selected):**
+- Drag **Cube** into the **Target** field
+- Set **Move Speed = 5**
+
+**To Test:**
+- Press ▶ Play → use **Arrow keys / WASD** to move Sphere around
+- Console prints **"Angle to target Cube is 152.53 degrees"** (angle keeps updating as you move)
+
+---

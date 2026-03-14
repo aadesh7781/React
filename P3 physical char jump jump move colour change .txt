@@ -1,0 +1,154 @@
+-----P3 AIM : IMPLEMENT PHYSICAL CHARACTERISTICS (JUMP) TO A OBJECT AND ALSO BIND SURFACE EFFECTOR-----
+
+**1. Creating Jump Effect**
+
+Setup:
+- Create a new 2D project in Unity
+- Right click in Hierarchy > 2D Object > Sprite > Circle (or any shape)
+- Select the object > Add Component > Physics 2D > Rigidbody2D
+- Set Gravity Scale = 1 on the Rigidbody2D (so it falls)
+- You can change the colour: Sprite Renderer > Color
+
+Add the Jump Script:
+- Select your object > Add Component > New Script > name it `jump`
+
+**JUMP SCRIPT [Press Space to jump]**
+
+using UnityEngine;
+
+public class jump : MonoBehaviour
+{
+    public float jumpforce = 4f;
+    private Rigidbody2D rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpforce);
+        }
+    }
+}
+
+
+Add a Ground:
+- Right click Hierarchy > 2D Object > Sprite > Square — use this as the ground
+- Place it below your circle/player object
+- On the Square > Add Component > Physics 2D > Rigidbody2D > set Body Type = Static
+- On the Square > Add Component > Physics 2D > Box Collider 2D
+- Also add Box Collider 2D to your circle/player object
+
+Fix object going off screen:
+- On Rigidbody2D of player: Constraints > Freeze Rotation Z = checked (stops spinning)
+
+Input Settings (if needed):
+- Edit > Project Settings > Player > Active Input Handling > change to Both
+
+To Test:
+- Press ▶ Play → Press Space → object should jump up and fall back
+
+
+**2. Creating Move Effect with Jump**
+
+Setup:
+- Keep the same scene (circle + ground)
+- Uncheck (disable) your previous jump script on the player
+- Add new script: `JUMP_MOVE`
+
+**JUMP_MOVE SCRIPT [Arrows/WASD to move + Space to jump]**
+using UnityEngine;
+
+public class JUMP_MOVE : MonoBehaviour
+{
+    public float moveSpeed = 5f;
+    public float jumpForce = 8f;
+    private Rigidbody2D rb;
+    private float moveX;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        moveX = Input.GetAxis("Horizontal");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
+    }
+}
+
+
+To Test:
+- Press ▶ Play → Arrow keys/A D to move → Space to jump
+
+---
+
+**3. Changing Color of Object While Moving**
+
+Setup:
+- Keep the same scene
+- Uncheck previous scripts, add new script: `jump_move_color`
+- Make sure your object has a SpriteRenderer component
+
+Color Logic: White = idle | Yellow = moving | Green = jumping
+
+**JUMP_MOVE_COLOR SCRIPT**
+using UnityEngine;
+
+public class jump_move_color : MonoBehaviour
+{
+    public float moveSpeed = 15f;
+    public float jumpForce = 8f;
+    private Rigidbody2D rb;
+    private SpriteRenderer sr;
+    private float moveX;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+    }
+
+    void Update()
+    {
+        moveX = Input.GetAxis("Horizontal");
+        rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
+
+        if (Mathf.Abs(rb.linearVelocity.y) > 0.1f)
+        {
+            sr.color = Color.green;   // Jumping
+        }
+        else if (Mathf.Abs(moveX) > 0.1f)
+        {
+            sr.color = Color.yellow;  // Moving
+        }
+        else
+        {
+            sr.color = Color.white;   // Idle
+        }
+    }
+}
+
+
+To Test:
+- Stand still → White
+- Move left/right → Yellow
+- Jump → Green
